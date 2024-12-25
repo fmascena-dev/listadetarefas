@@ -1,8 +1,8 @@
 import './TarefasStyles.scss';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-function Timer({ initialTime }) {
+function Timer({ initialTime, onComplete }) {
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -12,9 +12,12 @@ function Timer({ initialTime }) {
       timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
+    } else if (timeLeft === 0) {
+      setIsRunning(false);
+      onComplete();
     }
     return () => clearInterval(timer);
-  }, [isRunning, timeLeft]);
+  }, [isRunning, timeLeft, onComplete]);
 
   const handleStart = () => setIsRunning(true);
   const handleStop = () => setIsRunning(false);
@@ -29,7 +32,7 @@ function Timer({ initialTime }) {
   };
 
   return (
-    <div>
+    <div className="timer">
       <span className="span-timer">
         {timeLeft > 0 ? formatTime(timeLeft) : 'Tarefa expirada'}
       </span>
@@ -55,6 +58,7 @@ function Timer({ initialTime }) {
 
 Timer.propTypes = {
   initialTime: PropTypes.number.isRequired,
+  onComplete: PropTypes.func.isRequired,
 };
 
 export default function Tarefas() {
@@ -64,6 +68,7 @@ export default function Tarefas() {
   });
   const [taskTitle, setTaskTitle] = useState('');
   const [timer, setTimer] = useState('');
+  const timerInputRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -84,7 +89,7 @@ export default function Tarefas() {
 
     setTasks([
       ...tasks,
-      { title: taskTitle, done: false, timer: timeInSeconds },
+      { title: taskTitle, done: false, timer: timeInSeconds, completed: false },
     ]);
     setTaskTitle('');
     setTimer('');
@@ -93,6 +98,13 @@ export default function Tarefas() {
   const toggleTaskCompletion = (index) => {
     const updatedTasks = tasks.map((task, i) =>
       i === index ? { ...task, done: !task.done } : task,
+    );
+    setTasks(updatedTasks);
+  };
+
+  const markTaskAsCompleted = (index) => {
+    const updatedTasks = tasks.map((task, i) =>
+      i === index ? { ...task, done: true, completed: true } : task,
     );
     setTasks(updatedTasks);
   };
@@ -107,39 +119,138 @@ export default function Tarefas() {
     return (hrs || 0) * 3600 + (mins || 0) * 60 + (secs || 0);
   };
 
+  const handleTimerInput = (e) => {
+    const input = e.target;
+    const rawInput = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+    const cursorPosition = input.selectionStart; // Obtém a posição atual do cursor
+
+    if (rawInput.length === 0) {
+      setTimer('');
+      return;
+    }
+
+    const formattedTimer = formatTimerInput(rawInput);
+
+    // Reposiciona o cursor corretamente
+    const newCursorPosition = adjustCursorPosition(
+      cursorPosition,
+      rawInput,
+      formattedTimer,
+    );
+
+    setTimer(formattedTimer);
+
+    // Reposiciona o cursor após atualizar o valor
+    setTimeout(() => {
+      input.setSelectionRange(newCursorPosition, newCursorPosition);
+    }, 0);
+  };
+
+  const adjustCursorPosition = (currentPos, rawInput, newValue) => {
+    const diff = newValue.length - rawInput.length;
+    let newPos = currentPos;
+
+    // Se o número foi inserido, mova o cursor para a frente
+    if (diff === 1) {
+      if (currentPos === 2 || currentPos === 5) {
+        // O cursor deve avançar após digitar um número, especialmente após um ":"
+        newPos++;
+      } else {
+        newPos++;
+      }
+    }
+
+    // Ajuste ao apagar
+    if (diff === -1) {
+      if (currentPos === 3 || currentPos === 6) {
+        // Ao apagar, mova o cursor para trás (quando apagar os ":")
+        newPos--;
+      }
+    }
+
+    // Garantir que o cursor avance depois de digitar em qualquer lugar
+    if (currentPos === newPos) {
+      newPos++;
+    }
+
+    return newPos;
+  };
+
+  const formatTimerInput = (value) => {
+    const cleanValue = value.slice(0, 6); // Limita a 6 caracteres
+    const parts = cleanValue.match(/(\d{0,2})(\d{0,2})(\d{0,2})/);
+
+    const hours = parts[1] || ''; // Preenche conforme necessário
+    const minutes = parts[2] || '';
+    const seconds = parts[3] || '';
+
+    let formattedTime = hours;
+    if (minutes.length > 0) formattedTime += `:${minutes}`;
+    if (seconds.length > 0) formattedTime += `:${seconds}`;
+
+    return formattedTime;
+  };
+
   return (
     <main>
       <section>
         <h1>Lista de Tarefas</h1>
         <form onSubmit={handleAddTask}>
-          <input
-            type="text"
-            placeholder="Adicione uma tarefa"
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Tempo (hh:mm:ss)"
-            value={timer}
-            onChange={(e) => setTimer(e.target.value)}
-          />
-          <button type="submit">Adicionar</button>
+          <div className="inputs">
+            <div className="input-task">
+              <label htmlFor="task">Tarefa:</label>
+              <input
+                type="text"
+                placeholder="Adicione uma tarefa"
+                value={taskTitle}
+                onChange={(e) => setTaskTitle(e.target.value)}
+              />
+            </div>
+            <div className="input-timer">
+              <label htmlFor="timer">Duração:</label>
+              <input
+                ref={timerInputRef}
+                type="text"
+                placeholder="Tempo (hh:mm:ss)"
+                value={timer}
+                onChange={handleTimerInput}
+              />
+            </div>
+          </div>
+          <button className="add-task" type="submit">
+            ➕ Adicionar
+          </button>
         </form>
         <ul>
           {tasks.map((task, index) => (
-            <li
-              key={index}
-              style={{ textDecoration: task.done ? 'line-through' : 'none' }}
-            >
-              <input
-                type="checkbox"
-                checked={task.done}
-                onChange={() => toggleTaskCompletion(index)}
+            <li key={index}>
+              <div className="input-tarefa">
+                <input
+                  className="checkbox"
+                  type="checkbox"
+                  checked={task.done}
+                  onChange={() => toggleTaskCompletion(index)}
+                  disabled={task.completed}
+                />
+                <span
+                  style={{
+                    textDecoration: task.done ? 'line-through' : 'none',
+                    textDecorationColor: task.done ? '#ff0000' : 'initial',
+                    color: task.done ? '#333' : '#000',
+                  }}
+                  className="task-title"
+                >
+                  {task.title}
+                </span>
+              </div>
+              <Timer
+                initialTime={task.timer}
+                onComplete={() => markTaskAsCompleted(index)}
               />
-              <span>{task.title}</span>
-              <Timer initialTime={task.timer} />
-              <button onClick={() => handleRemoveTask(index)}>
+              <button
+                className="btn-remove"
+                onClick={() => handleRemoveTask(index)}
+              >
                 ❎ Remover
               </button>
             </li>

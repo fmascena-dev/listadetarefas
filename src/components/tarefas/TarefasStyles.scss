@@ -1,5 +1,5 @@
 main {
-  background: url('/background.jpg');
+  background: url('/portfolio.jpg');
   background-size: cover;
   height: 100vh;
   display: flex;
@@ -9,10 +9,348 @@ main {
 }
 
 section {
+  width: 70%;
+  max-width: auto;
+  margin: 0 auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+
+  h1 {
+    font-size: 2.5rem;
+    color: #fff;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 50%;
-    margin: 0 auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin: 1.25rem auto;
+    padding: 1.2rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 0.8rem;
+    box-shadow: 1px 1px 10px 5px rgba(0, 0, 0, 0.4);
+  }
+
+  .inputs {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .input-task,
+  .input-timer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  label {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #222;
+  }
+
+  input[type='text'] {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border 0.3s;
+  }
+
+  input[type='text']:focus {
+    border: 1px solid #00b7ff;
+  }
+
+  button.add-task {
+    display: inline-block;
+    width: 50%;
+    padding: 0.4rem;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button.add-task:hover {
+    background-color: #218838;
+  }
+
+  ul {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    li {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem;
+      gap: 0.8rem;
+
+      .task-title {
+        font-size: 1.5rem;
+        color: #000;
+      }
+
+      .btn-remove {
+        background-color: #ff0000;
+        padding: 0.2rem 1.2rem;
+        border: none;
+        color: #fff;
+        font-weight: 500;
+        font-size: 1.2rem;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #aa0000;
+        }
+      }
+
+      .input-tarefa {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .checkbox {
+        appearance: none;
+        width: 25px;
+        aspect-ratio: 1;
+        border-radius: 4px;
+        border: 3px solid #222;
+        position: relative;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .checkbox::before {
+        font-family: 'Quicksand', sans-serif;
+        position: absolute;
+        bottom: -6px;
+        left: -2px;
+        content: '✔';
+        font-size: 40px;
+        color: rgb(255, 0, 0);
+        transform: scale(0);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .checkbox:checked::before {
+        animation: zoom 0.5s ease-in-out;
+        transform: scale(1);
+      }
+
+      @keyframes zoom {
+        0% {
+          transform: scale(0);
+        }
+
+        20% {
+          transform: scale(1.5);
+        }
+
+        40% {
+          transform: scale(0.5);
+        }
+
+        50% {
+          transform: scale(1);
+        }
+
+        70% {
+          transform: scale(1.2);
+        }
+
+        90% {
+          transform: scale(0.8);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
+    }
+  }
+}
+
+.timer {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.span-timer {
+  font-size: 1.5rem;
+}
+
+.btns-timer {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: end;
+  gap: 0.5rem;
+
+  .timer-go {
+    border: none;
+    background: #00ff00;
+    color: #e8e8e8;
+    font-size: 1.2rem;
+    padding: 0.2rem 1.2rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:disabled {
+      background: #84fa84;
+      cursor: not-allowed;
+      color: #222;
+    }
+  }
+
+  .timer-stop {
+    border: none;
+    background: #e90000;
+    color: #e8e8e8;
+    font-size: 1.2rem;
+    padding: 0.2rem 1.2rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:disabled {
+      background: #f76d6d;
+      cursor: not-allowed;
+      color: #222;
+    }
+  }
+}
+
+/* Media Queries for Responsiveness */
+
+@media (max-width: 768px) {
+  section {
+    width: 90%;
+    padding: 15px;
+  }
+
+  form {
+    width: 80%;
+    padding: 1rem;
+  }
+
+  .inputs {
+    gap: 1rem;
+  }
+
+  input[type='text'] {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+
+  button.add-task {
+    width: 70%;
+    font-size: 1.1rem;
+  }
+
+  ul li {
+    padding: 1.5rem;
+    gap: 0.5rem;
+  }
+
+  .task-title {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  section {
+    width: 95%;
+    padding: 10px;
+  }
+
+  form {
+    width: 100%;
+    padding: 0.8rem;
+  }
+
+  .inputs {
+    gap: 0.8rem;
+  }
+
+  input[type='text'] {
+    font-size: 1.1rem;
+    padding: 0.9rem;
+  }
+
+  button.add-task {
+    width: 80%;
+    font-size: 1.2rem;
+  }
+
+  ul li {
+    padding: 1rem;
+  }
+
+  .task-title {
+    font-size: 1.1rem;
+  }
+
+  .btn-remove {
+    font-size: 1rem;
+  }
+
+  .timer-go, .timer-stop {
+    font-size: 1rem;
+    padding: 0.3rem 1rem;
+  }
+}
+
+@media (min-width: 1520px) {
+  section {
+    width: 100%;
+  }
+
+  form {
+    width: 60%;
+  }
+
+  button.add-task {
+    width: 40%;
+    font-size: 1.3rem;
+  }
+
+  ul li {
+    padding: 2.5rem;
+  }
+
+  .task-title {
+    font-size: 1.6rem;
+  }
+
+  .btn-remove {
+    font-size: 1.3rem;
+  }
 }
