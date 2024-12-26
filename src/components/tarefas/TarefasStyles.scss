@@ -1,6 +1,7 @@
 main {
   background: url('/portfolio.jpg');
   background-size: cover;
+  background-position: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -59,8 +60,8 @@ section {
 
   label {
     font-weight: bold;
-    font-size: 1rem;
-    color: #222;
+    font-size: 1.2rem;
+    color: #fff;
   }
 
   input[type='text'] {
@@ -105,14 +106,13 @@ section {
       width: 100%;
       display: flex;
       justify-content: space-between;
-      // align-items: center;
       padding: 2rem 1rem;
       flex-wrap: wrap;
       gap: 0.8rem;
 
       .task-title {
         font-size: 1.5rem;
-        color: #000;
+        color: #fff;
       }
 
       .btn-remove {
@@ -142,7 +142,7 @@ section {
         width: 25px;
         aspect-ratio: 1;
         border-radius: 4px;
-        border: 3px solid #222;
+        border: 3px solid #ddd;
         position: relative;
         transition: all 0.2s ease-in-out;
       }
@@ -154,14 +154,14 @@ section {
         left: -2px;
         content: '✔';
         font-size: 40px;
-        color: rgb(255, 0, 0);
+        color: rgb(255, 255, 0);
         transform: scale(0);
         transition: all 0.2s ease-in-out;
       }
 
       .checkbox:checked::before {
         animation: zoom 0.5s ease-in-out;
-        transform: scale(1);
+        transform: scale(1.1);
       }
 
       @keyframes zoom {
@@ -170,23 +170,23 @@ section {
         }
 
         20% {
-          transform: scale(1.5);
+          transform: scale(1.9);
         }
 
         40% {
-          transform: scale(0.5);
+          transform: scale(0.9);
         }
 
         50% {
-          transform: scale(1);
+          transform: scale(1.5);
         }
 
         70% {
-          transform: scale(1.2);
+          transform: scale(1.8);
         }
 
         90% {
-          transform: scale(0.8);
+          transform: scale(1.3);
         }
 
         100% {
@@ -201,6 +201,7 @@ section {
   display: flex;
   gap: 0.8rem;
   align-items: center;
+  color: #fff;
 }
 
 .span-timer {
@@ -224,6 +225,12 @@ section {
     cursor: pointer;
     font-weight: 500;
 
+    &:enabled {
+      &:hover {
+        box-shadow: 1px 1px 10px 5px rgba(0, 0, 0, 0.9);
+      }
+    }
+
     &:disabled {
       background: #84fa84;
       cursor: not-allowed;
@@ -231,6 +238,10 @@ section {
     }
   }
 
+  .span-timer {
+    color: #FFF;
+  }
+  
   .timer-stop {
     border: none;
     background: #e90000;
@@ -240,6 +251,12 @@ section {
     border-radius: 2rem;
     cursor: pointer;
     font-weight: 500;
+
+    &:enabled {
+      &:hover {
+        box-shadow: 1px 1px 10px 5px rgba(0, 0, 0, 0.9);
+      }
+    }
 
     &:disabled {
       background: #f76d6d;

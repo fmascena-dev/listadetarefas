@@ -2,7 +2,7 @@ import './TarefasStyles.scss';
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-function Timer({ initialTime, onComplete }) {
+function Timer({ initialTime, onComplete, onTimeUpdate, isCompleted }) {
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -10,14 +10,18 @@ function Timer({ initialTime, onComplete }) {
     let timer;
     if (isRunning && timeLeft > 0) {
       timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+        setTimeLeft((prev) => {
+          const updatedTime = prev - 1;
+          onTimeUpdate(updatedTime);
+          return updatedTime;
+        });
       }, 1000);
     } else if (timeLeft === 0) {
       setIsRunning(false);
       onComplete();
     }
     return () => clearInterval(timer);
-  }, [isRunning, timeLeft, onComplete]);
+  }, [isRunning, timeLeft, onComplete, onTimeUpdate]);
 
   const handleStart = () => setIsRunning(true);
   const handleStop = () => setIsRunning(false);
@@ -30,6 +34,10 @@ function Timer({ initialTime, onComplete }) {
       .toString()
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  if (isCompleted) {
+    return <span className="span-timer" style={{color: '#FFF'}}>Tarefa concluída!</span>;
+  }
 
   return (
     <div className="timer">
@@ -59,6 +67,8 @@ function Timer({ initialTime, onComplete }) {
 Timer.propTypes = {
   initialTime: PropTypes.number.isRequired,
   onComplete: PropTypes.func.isRequired,
+  onTimeUpdate: PropTypes.func.isRequired,
+  isCompleted: PropTypes.func.isRequired,
 };
 
 export default function Tarefas() {
@@ -236,7 +246,7 @@ export default function Tarefas() {
                   style={{
                     textDecoration: task.done ? 'line-through' : 'none',
                     textDecorationColor: task.done ? '#ff0000' : 'initial',
-                    color: task.done ? '#333' : '#000',
+                    color: task.done ? '#999' : '#FFF',
                   }}
                   className="task-title"
                 >
@@ -246,6 +256,14 @@ export default function Tarefas() {
               <Timer
                 initialTime={task.timer}
                 onComplete={() => markTaskAsCompleted(index)}
+                onTimeUpdate={(updatedTime) => {
+                  setTasks((prevTasks) =>
+                    prevTasks.map((task, i) =>
+                      i === index ? { ...task, timer: updatedTime } : task,
+                    ),
+                  );
+                }}
+                isCompleted={task.done}
               />
               <button
                 className="btn-remove"
